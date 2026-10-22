@@ -26,3 +26,14 @@ Hero and quiz card merged behind one green "Start the 2 minute check" CTA;
 ## Redesign — 2026-10-21
 One CTA above the fold, intro card deleted, Estate Explorer promo cut from
 the homepage, hero subline 39 -> 18 words.
+
+## Addendum — 2026-10-22 17:55 UTC (parallel lane, recorded by the deploy lane)
+Minutes after the Template v2 deploy, a parallel lane restored the FAQ section
+(302 words) and its FAQPage schema to the homepage and redeployed
+(backup: index.html.bak-2026-10-22-pre-faq-restore). Everything else from
+Template v2 stands (one start, hero budgets, traps 25w, about 24w, PostHog,
+footer credit). Current live totals with the FAQ: 452 visible words,
+FK 5.1 — over the v2 page budget (<=300) and grade (<=3). The FAQ and the
+budget cannot both hold on one page; this is a decision for Billy:
+(a) move the FAQ to /how-it-works, or (b) keep it and exempt it.
+Live md5 after restore: f961c2a8e6af14fb3673cfcbe344e19f.
