@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearline Family: Know your family is protected</title>
+<meta name="description" content="Know your family is protected. Ten short questions. See what families like yours pick, and the traps to know. General education, not advice.">
+<style>
+:root{
+  --ink:#1d2622; --muted:#5c665f; --pine:#14604a; --pine-dark:#0d4a38; --pine-soft:#e7f2ec;
+  --paper:#faf8f3; --card:#ffffff; --line:#e4dccc; --amber:#b06f1e; --warn-bg:#fdf4e2; --warn-bd:#e3c88f;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;font-size:17px;overflow-x:hidden}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:700;line-height:1.18}
+a{color:var(--pine)}
+
+header.site{position:sticky;top:0;z-index:50;background:rgba(250,248,243,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;gap:12px}
+.brand{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:700;white-space:nowrap;text-decoration:none}
+.brand span{color:var(--pine)}
+nav.main{display:flex;gap:20px;font-size:15px}
+nav.main a{color:var(--muted);text-decoration:none;white-space:nowrap}
+nav.main a:hover{color:var(--pine)}
+nav.main a.navcta{color:var(--pine);font-weight:700}
+
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
+
+.hero{padding:44px 0 2px;text-align:left;position:relative}
+.hero .kicker{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--pine);font-weight:700;margin-bottom:14px;animation:fadeUp .7s ease both}
+.hero h1{font-size:40px;margin-bottom:14px;animation:fadeUp .7s ease .08s both}
+.hero p.sub{font-size:19px;color:var(--muted);max-width:640px;margin-bottom:8px;animation:fadeUp .7s ease .16s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fine{font-size:13.5px;color:var(--muted)}
+#qstart{text-align:center;padding:8px 0 4px}
+.startbtn.big{display:inline-block;font-size:21px;padding:20px 46px;min-height:68px;border-radius:14px;box-shadow:0 14px 30px rgba(20,96,74,.32);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 14px 30px rgba(20,96,74,.32)}50%{box-shadow:0 14px 38px rgba(20,96,74,.5)}}
+@media (prefers-reduced-motion: reduce){.startbtn.big{animation:none}.rv{transition:none}}
+.steps.inquiz{justify-content:center;animation:none;margin:20px 0 6px}
+.qmicro{font-size:14px;color:var(--muted);text-align:center}
+.herofine{text-align:center;margin:2px 0 6px}
+.steps{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0 2px;animation:fadeUp .7s ease .2s both}
+.stepitem{display:flex;align-items:center;gap:10px}
+.stepicon{width:44px;height:44px;border-radius:50%;background:var(--pine-soft);display:flex;align-items:center;justify-content:center;flex:none}
+.stepicon svg{width:24px;height:24px;stroke:var(--pine);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stepicon.warn{background:var(--warn-bg)}
+.stepicon.warn svg{stroke:var(--amber)}
+.steptext{font-size:15.5px;font-weight:600;line-height:1.3;max-width:150px}
+.steparrow{color:var(--muted);font-size:18px}
+.quizbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px;margin:18px 0 8px;box-shadow:0 10px 30px rgba(29,38,34,.06);scroll-margin-top:92px}
+.morelink{display:inline-block;margin-top:16px;font-weight:700;font-size:16px}
+details.faq{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+details.faq summary{font-family:Georgia,"Times New Roman",serif;font-size:18.5px;font-weight:700;cursor:pointer;list-style:none;line-height:1.35}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";float:right;color:var(--pine);font-family:inherit}
+details.faq[open ] summary::after{content:"\2013"}
+details.faq p{color:var(--muted);font-size:15.5px;margin-top:8px}
+.quizbox h2{font-size:26px;margin-bottom:8px}
+.progress{height:8px;background:var(--pine-soft);border-radius:99px;overflow:hidden;margin:16px 0 20px}
+.progress i{display:block;height:100%;width:0;background:var(--pine);border-radius:99px;transition:width .45s ease}
+.step{display:none}
+.step.on{display:block;animation:stepIn .38s ease both}
+@keyframes stepIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.step h3{font-size:21px;line-height:1.35;margin-bottom:6px;font-family:Georgia,"Times New Roman",serif}
+.step .hint{color:var(--muted);font-size:15px;margin-bottom:16px}
+.opts{display:grid;gap:10px}
+.opt{display:block;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;font-size:16.5px;color:var(--ink);cursor:pointer;min-height:52px;touch-action:manipulation;transition:border-color .15s ease,background .15s ease,transform .1s ease;font-family:inherit}
+.opt:hover{border-color:var(--pine)}
+.opt:active{transform:scale(.99)}
+.opt.sel{border-color:var(--pine);background:var(--pine-soft)}
+.quiznav{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.backbtn{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:10px 6px;min-height:44px;font-family:inherit}
+.startbtn,.againbtn{display:inline-block;background:var(--pine);color:#fff;border:none;font-weight:700;padding:14px 26px;border-radius:12px;font-size:17px;min-height:52px;cursor:pointer;font-family:inherit}
+.startbtn:hover,.againbtn:hover{background:var(--pine-dark)}
+.qcount{font-size:13.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.result h3{font-size:25px;margin-bottom:4px}
+.result .rlabel{font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pine);font-weight:700;margin-bottom:8px}
+.result .why{font-size:18px;margin-bottom:14px}
+.result .looks{color:var(--muted);margin-bottom:16px}
+.trap{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:12px;padding:14px 16px;margin:10px 0}
+.trap strong{display:block;font-size:15.5px;margin-bottom:2px}
+.trap p{font-size:15px;color:#5c4d26}
+.sizenote{background:var(--pine-soft);border-radius:12px;padding:14px 16px;font-size:15.5px;margin:14px 0}
+
+section{padding:44px 0;border-top:1px solid var(--line)}
+section h2{font-size:28px;margin-bottom:10px}
+section .lede{color:var(--muted);max-width:680px;margin-bottom:8px}
+.grid{display:grid;gap:14px;margin-top:18px}
+@media(min-width:760px){.grid.c3{grid-template-columns:repeat(3,1fr)}.grid.c2{grid-template-columns:repeat(2,1fr)}}
+a.card{display:block;text-decoration:none;color:inherit}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{font-size:18.5px;margin-bottom:6px}
+.card p{color:var(--muted);font-size:15.5px}
+.stepnum{font-family:Georgia,serif;font-size:30px;color:var(--pine);display:block;margin-bottom:4px}
+.card .tag{display:inline-block;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:8px}
+
+footer{padding:36px 0 52px;border-top:1px solid var(--line)}
+footer p{font-size:13.5px;color:var(--muted);margin-bottom:8px;max-width:760px}
+footer .fbrand{font-size:15px;color:var(--ink);font-weight:700}
+
+@media(max-width:560px){
+  .steps.inquiz{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .steps.inquiz .stepitem{flex-direction:column;text-align:center;gap:6px}
+  .steps.inquiz .steparrow{display:none}
+  .steptext{max-width:100%;font-size:12.5px}
+  .stepicon{width:36px;height:36px}
+  .stepicon svg{width:20px;height:20px}
+  .startbtn.big{display:block;width:100%;font-size:20px;padding:19px 20px}
+  .hero h1{font-size:32px}
+  .hero{padding-top:30px}
+  header.site .wrap{flex-wrap:wrap;padding-top:10px;padding-bottom:6px;row-gap:2px}
+  nav.main{gap:16px;font-size:14px;padding-bottom:6px}
+  nav.main a.hideS{display:none}
+  section h2{font-size:24px}
+}
+</style>
+<link rel="canonical" href="https://clearlinefamily.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://clearlinefamily.com/">
+<meta property="og:title" content="Clearline Family: Know your family is protected">
+<meta property="og:description" content="Know your family is protected. Ten short questions. See what families like yours pick, and the traps to know. General education, not advice.">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Clearline Family","url":"https://clearlinefamily.com/","description":"Life insurance and estate funding, in plain English. General education, not advice."}
+</script>
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing $set_once capture getPageviewId captureTraceFeedback captureTraceMetric".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7', {api_host: 'https://us.i.posthog.com', person_profiles: 'identified_only', autocapture: false, capture_pageview: true, disable_session_recording: true});
+posthog.register({site: 'clearline-family'});
+</script>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">Clearline <span>Family</span></a>
+    <nav class="main">
+      <a href="#quiz">The Check</a>
+      <a href="/how-it-works" class="hideS">How it works</a>
+      <a href="/traps" class="hideS">Traps</a>
+      <a href="/explorer">Explorer</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" id="top">
+
+<div class="hero">
+  <div class="kicker">Life insurance, in plain English</div>
+  <h1>Know your family is protected.</h1>
+  <p class="sub">Ten short questions. See what families like yours pick.</p>
+</div>
+
+<div class="quizbox" id="quiz">
+  <div id="qstart">
+    <button type="button" class="startbtn big" id="heroStart">Start the 2 minute check</button>
+    <div class="steps inquiz" aria-label="How the check works">
+      <div class="stepitem"><span class="stepicon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h4"/><path d="M9 16.2l1.6 1.6 2.8-2.8"/></svg></span><span class="steptext">1. Answer 10 questions</span></div>
+      <span class="steparrow" aria-hidden="true">&rarr;</span>
+      <div class="stepitem"><span class="stepicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 2.5V11c0 4.6-3 7.7-7 9.5C8 18.7 5 15.6 5 11V5.5z"/><path d="M9 11.5l2.2 2.2 4.3-4.2"/></svg></span><span class="steptext">2. See your cover kind</span></div>
+      <span class="steparrow" aria-hidden="true">&rarr;</span>
+      <div class="stepitem"><span class="stepicon warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L21.5 20h-19z"/><path d="M12 10v4.2M12 17h.01"/></svg></span><span class="steptext">3. Know the traps</span></div>
+    </div>
+    <p class="qmicro">About 2 minutes. Nothing saved or sent.</p>
+  </div>
+  <div id="qzone"></div>
+  <div id="rzone"></div>
+</div>
+
+
+<section id="traps">
+  <h2 class="rv">Traps</h2>
+  <div class="grid c2">
+    <a class="card rv" href="/traps"><h3>Funding trap: fund fast, tax flips.</h3></a>
+    <a class="card rv d1" href="/traps"><h3>Loan trap: loans cut the payout.</h3></a>
+    <a class="card rv" href="/traps"><h3>Payout trap: how pay comes counts.</h3></a>
+    <a class="card rv d1" href="/traps"><h3>Work trap: ends with the job.</h3></a>
+  </div>
+</section>
+
+<section id="about">
+  <h2 class="rv">Who we are</h2>
+  <div class="grid c2">
+    <div class="card rv"><h3>The practice</h3><p>Wills, trusts, taxes, and life cover, in plain words.</p></div>
+    <div class="card rv d1"><h3>The founder</h3><p>William Litner, FCAS, a career actuary. License pending.</p></div>
+  </div>
+</section>
+
+
+<footer>
+  <p class="fbrand">Clearline Family</p>
+  <p>General education only. Not advice. Not a recommendation. Not an offer of coverage.</p>
+  <p>WA license in progress. No insurance is sold here. Your answers stay in your browser. Never saved, sent, or shared.</p>
+  <p>Built with Muse.</p>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+/* === ENGINE START === */
+var QUESTIONS = [
+ {id:"q1", text:"Who is in your household right now?", hint:"Pick the closest fit.",
+  options:[
+   {t:"Just me", s:{r1:1, r2:1}},
+   {t:"Me and a partner", s:{r1:1, r4:1}},
+   {t:"Kids at home", s:{r1:2, r2:1}},
+   {t:"Kids are grown. Parents may need help from me.", s:{r5:2, r4:1}}]},
+ {id:"q2", text:"If your income stopped tomorrow, who would feel it?", hint:"This decides which sizing lens fits.",
+  options:[
+   {t:"My partner and kids depend on it", s:{r1:2, r4:1}},
+   {t:"Mostly my partner", s:{r1:1, r4:1}},
+   {t:"My partner earns. I run the home and the kids.", s:{r1:1}, flag:"caregiver"},
+   {t:"No one depends on my income", s:{r5:1}}]},
+ {id:"q3", text:"What would worry you most in the first year after a death?", hint:"Pick the one that sits heaviest.",
+  options:[
+   {t:"Paying off debts", s:{}},
+   {t:"Keeping household income going", s:{r1:1}},
+   {t:"The mortgage", s:{r1:1}},
+   {t:"School costs for the kids", s:{r1:1}},
+   {t:"Final costs and loose ends", s:{r5:1}}]},
+ {id:"q4", text:"What life insurance coverage do you already have?", hint:"Count anything real, even small policies.",
+  options:[
+   {t:"None", s:{}},
+   {t:"Only through my job", s:{r3:5}},
+   {t:"Through my job, plus a policy of my own", s:{r6:2}},
+   {t:"A policy of my own", s:{r6:2}}]},
+ {id:"q5", text:"How long does this protection need to last?", hint:"This is the question that shapes the answer most.",
+  options:[
+   {t:"Until the kids are grown", s:{r1:3, r2:2, r3:1}},
+   {t:"Until the mortgage is gone", s:{r1:3, r3:1}},
+   {t:"For my whole life", s:{r5:3, r4:2}},
+   {t:"Not sure yet", s:{r2:3, r4:1}}]},
+ {id:"q6", text:"How do you think about the budget for this?", hint:"There is no wrong answer. It changes the match.",
+  options:[
+   {t:"Lowest cost that truly covers the need", s:{r1:2, r2:1}},
+   {t:"A middle path", s:{r4:2, r2:1}},
+   {t:"Build something long term", s:{r5:2, r4:2}}]},
+ {id:"q7", text:"Might you ever put a lump sum into a policy?", hint:"For example money from a maturing CD, a bonus, or an inheritance.",
+  options:[
+   {t:"Yes, possibly", s:{}, trap:"mec"},
+   {t:"No", s:{}},
+   {t:"I already have money in a policy like that", s:{r6:1}, trap:"mec"}]},
+ {id:"q8", text:"Do you have a policy with a loan on it, or one that is paid up?", hint:"Both are common. Both hide surprises.",
+  options:[
+   {t:"There is a loan on my policy", s:{r6:4}, trap:"loan"},
+   {t:"I have a paid up policy", s:{r6:4}, trap:"paidup"},
+   {t:"Neither", s:{}},
+   {t:"I have no policy", s:{}}]},
+ {id:"q9", text:"If money went to your family, how should it arrive?", hint:"Owners can often set this ahead of time.",
+  options:[
+   {t:"One lump sum", s:{r5:1}},
+   {t:"Steady payments over time", s:{}, trap:"settle"},
+   {t:"Not sure", s:{}, trap:"settle"}]},
+ {id:"q10", text:"Would you want the option to make coverage permanent later, without new health checks?", hint:"Health changes. Options bought young are cheap.",
+  options:[
+   {t:"Yes, that option matters to me", s:{r2:3}},
+   {t:"No, a set term is fine", s:{r1:1}},
+   {t:"I had not thought about it", s:{r2:1}}]}
+];
+var RESULTS = {
+ r1:{name:"Level term life insurance", looks:"A set number of years of coverage, often 20 or 30, sized to the years your family could not self-fund. It is the lowest cost way to put a large death benefit in place, and it is built to expire after the need does."},
+ r2:{name:"Convertible term life insurance", looks:"Term coverage now, with a written option to convert some or all of it to permanent coverage later, without new medical underwriting. The health class from when you started carries over. Producers treat the conversion window and its deadline as the valuable part."},
+ r3:{name:"Your own policy alongside work coverage", looks:"An individual policy you own outright, sized to the real need, with the employer group policy treated as a bonus on top. The policy you own cannot be lost in a layoff, a job change, or retirement."},
+ r4:{name:"A term and permanent blend", looks:"Term coverage carries the big, time-limited needs like the mortgage and the school years. A smaller permanent piece covers the needs that never expire, like final costs or a dependent who will need support for life."},
+ r5:{name:"Permanent coverage built to last for life", looks:"Whole life or guaranteed universal life coverage that does not expire, sized with a keep-the-principal mindset: the benefit is the plan itself, meant to be there at death whenever death comes."},
+ r6:{name:"Start with a review of the policy you already have", looks:"Before any talk of new coverage, a producer would read the policy you own: its cash value, any loan and unpaid interest, its funding pace, and its payout settings. Many families find the fix is inside the policy they already hold."}
+};
+var WHY_SIT = {
+ q1_0:["Right now the plan only has to protect you, so it can stay simple and lean.","With no dependents in the picture, the job of coverage is smaller and more personal.","When it is just you, producers focus on debts, final costs, and anyone who would be left holding them."],
+ q1_1:["With a partner counting on shared income, the plan has to hold for two people, not one.","When two lives run on one household budget, a death changes the math for the one who remains.","Partners often insure each other, because the surviving partner inherits every bill the two of you split."],
+ q1_2:["With kids at home, the need is at its highest and the budget is real.","While the kids are young, a death would hit the family budget hardest and for the longest stretch.","With children counting on you, coverage has a clear job for the next couple of decades."],
+ q1_3:["With kids grown and parents aging, the need shifts from raising a family to closing out obligations and leaving things tidy.","At this stage, producers look at final costs, estate loose ends, and help you may owe your own parents.","With the big child-raising years behind you, coverage becomes about certainty rather than size."],
+ q2_2:["A caregiver's work has a real price, even without a paycheck. Childcare and household help would have to be bought for years.","Income based sizing values a stay at home parent at zero, which is wrong on the ground. Producers price the work itself.","If the parent who runs the home were gone, the surviving parent would have to buy that work or cut their own hours to do it."]
+};
+var WHY_TYPE = {
+ r1:["level term puts the largest death benefit in place per dollar for the years that matter most.","term coverage matches a need that has an end date, so you stop paying when the need stops.","producers reach for level term first when the window is clear and the budget is tight."],
+ r2:["convertible term keeps a door open: permanent coverage later, at the health class you have today, with no new medical checks.","it costs a little more than the plainest term, and what it buys is an option on your current good health.","flexibility is the point here, because a lot can change in twenty years and health is one of the things that can."],
+ r3:["coverage through a job ends when the job does, so families often own a policy outright and treat the work benefit as extra.","an individual policy is priced on your health today and stays yours through layoffs, job changes, and retirement.","producers size the policy you own to the full need, then count group coverage as a cushion, never as the foundation."],
+ r4:["a blend lets each kind of coverage do the job it is cheapest at: term for the big temporary needs, permanent for the ones that never end.","most family needs expire, and a few never do. Matching one product to each kind is often cheaper than forcing one product to do both.","this is the shape producers land on when the horizon answers point in two directions at once."],
+ r5:["permanent coverage is built to be there at death whenever death comes, which is what a lifetime need calls for.","when the goal is money that outlives you, expiring coverage is the wrong tool, even when it is cheaper.","families in this spot accept a higher cost as the price of certainty that the benefit will exist."],
+ r6:["the most valuable next step is information: what the existing policy really promises after loans, funding pace, and payout settings are counted.","new coverage talk is premature until the policy in hand is understood. Its traps and its value are both already bought and paid for.","a careful review often finds the answer inside the current contract, in its loan balance, its maturity terms, or its payout option."]
+};
+var WHY_HORIZON = {
+ q5_0:"Your horizon points the same way: cover the years until the kids can stand on their own.",
+ q5_1:"Your horizon points the same way: the coverage years line up with the mortgage years.",
+ q5_2:"A whole life horizon is exactly what this kind of coverage is built for.",
+ q5_3:"Since the horizon is not settled yet, keeping options open matters more than locking a design in."
+};
+var SIZE_NOTES = {
+ q3_0:"How a producer would size it: the DIME method. Debts first, then income for the years family needs it, then the mortgage, then school costs. Subtract savings and any coverage already in place. The gap is the working number.",
+ q3_1:"How a producer would size it: start with income replacement, the years your family would need your earnings replaced, then add debts, the mortgage, and school costs with the DIME method. Subtract what you already have.",
+ q3_2:"How a producer would size it: the mortgage balance anchors the DIME method, with debts, income years, and school costs added, and existing coverage and savings subtracted to find the real gap.",
+ q3_3:"How a producer would size it: education costs per child go into the DIME method alongside debts, income years, and the mortgage. Existing coverage and savings come off the total.",
+ q3_4:"How a producer would size it: final expenses and loose ends are usually the smallest bucket in the DIME method, after debts, income years, the mortgage, and school costs. Even so, producers count them explicitly rather than rounding them away."
+};
+var TRAPS = {
+ mec:{title:"Watch for: the fast funding trap", text:"Money put into a cash value policy faster than the federal 7-pay limit turns it into a modified endowment contract. Money out is then taxed on gains first, plus a 10 percent penalty before age 59 and a half. A single premium always creates one. It can be fine when the goal is only the death benefit, and a real problem when the plan was to tap the money later."},
+ loan:{title:"Watch for: the loan balance", text:"At death, a beneficiary receives the face amount minus any policy loan and unpaid interest. The cash value is not added on top. If a loan and its interest outgrow the policy, the policy can lapse and leave a tax bill behind."},
+ paidup:{title:"Worth knowing: paid up is not matured", text:"Finishing premiums means a policy is paid up. It matures at death, at the contract's maturity age, or when cash value grows to equal the face amount. Modern contracts usually set maturity at age 121. An old policy nearing an age 100 maturity needs a plan, because a maturity payout is taxed on the gain."},
+ settle:{title:"Worth knowing: how the money arrives", text:"A death benefit can often be paid as a lump sum or as steady payments. A straight life income option pays the most per month and stops entirely at the beneficiary's death. Options with certain in the name guarantee a period or an amount, so value can pass on."},
+ group:{title:"Worth knowing: the $50,000 line at work", text:"Employer paid group coverage is tax free to you only on the first $50,000. Above that, the IRS counts premium value as taxable income. And group coverage usually ends or shrinks when the job does."},
+ caregiver:{title:"Worth knowing: the unpaid job counts", text:"Producers using the needs approach price a stay at home parent's work directly: years of childcare and household help the family would have to buy. Calculators that multiply income miss this completely."}
+};
+function computeResult(ans){
+  var score = {r1:0, r2:0, r3:0, r4:0, r5:0, r6:0};
+  var traps = [];
+  var i, q, o, k;
+  for (i = 0; i < QUESTIONS.length; i++){
+    q = QUESTIONS[i]; o = q.options[ans[i]];
+    for (k in o.s) score[k] += o.s[k];
+    if (o.trap && traps.indexOf(o.trap) === -1) traps.push(o.trap);
+    if (o.flag === "caregiver" && traps.indexOf("caregiver") === -1) traps.push("caregiver");
+  }
+  if (ans[3] === 1 && traps.indexOf("group") === -1) traps.push("group");
+  if (ans[5] === 0){
+    var override = (ans[4] === 2 && ans[0] === 3);
+    if (!override) score.r5 = Math.min(score.r5, Math.max(score.r1, score.r2) - 1);
+  }
+  var order = ["r6","r3","r2","r1","r4","r5"];
+  var best = "r1", bestScore = -1;
+  for (i = 0; i < order.length; i++){
+    var id = order[i];
+    if (score[id] > bestScore){ bestScore = score[id]; best = id; }
+  }
+  var sitKey = "q1_" + ans[0];
+  var sitPool = WHY_SIT[sitKey];
+  if (!sitPool){
+    if (ans[1] === 2) sitPool = WHY_SIT.q2_2;
+    else sitPool = WHY_SIT.q1_2;
+  }
+  var pick = function(pool, seed){ return pool[Math.abs(seed) % pool.length]; };
+  var seed = ans[0]*7 + ans[4]*3 + ans[5];
+  var why = pick(sitPool, seed) + " Families in situations like yours often look at " + RESULTS[best].name.charAt(0).toLowerCase() + RESULTS[best].name.slice(1) + ", because " + pick(WHY_TYPE[best], seed + ans[1]) + " " + WHY_HORIZON["q5_" + ans[4]];
+  return { result: best, score: score, traps: traps, why: why, sizeNote: SIZE_NOTES["q3_" + ans[2]] };
+}
+/* === ENGINE END === */
+
+(function(){
+  var qzone = document.getElementById("qzone");
+  var rzone = document.getElementById("rzone");
+  var answers = [];
+  var current = -1;
+  var guard = false;
+  function lock(){ if (guard) return true; guard = true; setTimeout(function(){ guard = false; }, 450); return false; }
+  function renderQuestion(){
+    rzone.innerHTML = "";
+    var q = QUESTIONS[current];
+    var pct = Math.round((current) / QUESTIONS.length * 100);
+    var html = '<div class="step on"><div class="qcount">Question ' + (current+1) + ' of ' + QUESTIONS.length + '</div>' +
+      '<div class="progress"><i style="width:' + pct + '%"></i></div>' +
+      '<h3>' + q.text + '</h3><p class="hint">' + q.hint + '</p><div class="opts">';
+    q.options.forEach(function(o, idx){
+      html += '<button type="button" class="opt" data-idx="' + idx + '">' + o.t + '</button>';
+    });
+    html += '</div><div class="quiznav">' +
+      (current > 0 ? '<button type="button" class="backbtn" id="backBtn">Back</button>' : '<span></span>') +
+      '<span class="qcount">' + (QUESTIONS.length - current) + ' to go</span></div></div>';
+    qzone.innerHTML = html;
+    var opts = qzone.querySelectorAll(".opt");
+    opts.forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if (lock()) return;
+        btn.classList.add("sel");
+        answers[current] = parseInt(btn.getAttribute("data-idx"), 10);
+        setTimeout(function(){
+          current++;
+          if (current >= QUESTIONS.length) renderResult();
+          else renderQuestion();
+        }, 180);
+      });
+    });
+    var back = document.getElementById("backBtn");
+    if (back) back.addEventListener("click", function(){ if (lock()) return; current--; renderQuestion(); });
+  }
+  function renderResult(){
+    qzone.innerHTML = "";
+    var out = computeResult(answers);
+    var r = RESULTS[out.result];
+    var html = '<div class="step on result"><div class="qcount">Your result</div>' +
+      '<div class="progress"><i style="width:100%"></i></div>' +
+      '<div class="rlabel">Families in situations like yours often look at</div>' +
+      '<h3>' + r.name + '</h3>' +
+      '<p class="why">' + out.why + '</p>' +
+      '<p class="looks">' + r.looks + '</p>';
+    out.traps.slice(0, 3).forEach(function(tid){
+      var t = TRAPS[tid];
+      html += '<div class="trap"><strong>' + t.title + '</strong><p>' + t.text + '</p></div>';
+    });
+    html += '<div class="sizenote">' + out.sizeNote + '</div>' +
+      '<p class="fine">General education only. This result describes what families in similar situations often look at. It is not insurance advice, not a recommendation for your family, and not an offer of coverage. Clearline Family\u2019s Washington producer licensing is in progress, and no insurance is sold through this site. A licensed producer would confirm your health, budget, and existing coverage before any real recommendation.</p>' +
+      '<div class="quiznav"><button type="button" class="againbtn" id="againBtn">Start over</button><a href="#traps" style="font-size:15px">Read the traps</a></div></div>';
+    rzone.innerHTML = html;
+    document.getElementById("againBtn").addEventListener("click", function(){
+      if (lock()) return;
+      startQuiz(true);
+    });
+    rzone.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  function startQuiz(scroll){
+    var qs = document.getElementById("qstart");
+    if (qs) qs.style.display = "none";
+    rzone.innerHTML = "";
+    answers = []; current = 0;
+    renderQuestion();
+    if (scroll) document.getElementById("quiz").scrollIntoView({behavior:"smooth"});
+  }
+  [["heroStart", true]].forEach(function(pair){
+    var el = document.getElementById(pair[0]);
+    if (el) el.addEventListener("click", function(e){
+      e.preventDefault();
+      if (lock()) return;
+      startQuiz(pair[1]);
+    });
+  });
+})();
+
+(function(){
+  var els = document.querySelectorAll(".rv");
+  if (!("IntersectionObserver" in window)){ els.forEach(function(e){ e.classList.add("in"); }); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+  }, {threshold: 0.12});
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "38de4f0a69944b3f93feeac0a290a1c2"}'></script>
+</body>
+</html>

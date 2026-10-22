@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Estate Explorer | Clearline Family</title>
+<meta name="description" content="An interactive explorer: three typical families, scenario toggles, and the Washington estate-tax bite drawn at each step. Planning estimates, not advice.">
+<style>
+:root{
+  --ink:#1a1a1a; --muted:#5a5a5a; --accent:#b3541e; --bg:#faf8f4; --card:#ffffff; --line:#e8e2d8;
+  --blue-bg:#eff6ff; --blue-bd:#3b82f6;
+  --green-bg:#f0fdf4; --green-bd:#22c55e;
+  --amber-bg:#fffbeb; --amber-bd:#f59e0b;
+  --red-bg:#fef2f2; --red-bd:#ef4444;
+  --slate-bg:#f8fafc; --slate-bd:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:17px}
+.wrap{max-width:1220px;margin:0 auto;padding:0 20px}
+header.site{padding:24px 0 8px}
+.brand{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.brand a{color:var(--muted);text-decoration:none}
+.hero{padding:28px 0 20px;max-width:760px}
+.hero h1{font-size:34px;line-height:1.2;margin-bottom:12px;font-weight:700}
+.hero p{font-size:18px;color:var(--muted);margin-bottom:8px}
+.fine{font-size:14px;color:var(--muted)}
+.fam-picker{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0 8px}
+.fam{flex:1 1 280px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:16px 18px;cursor:pointer;font-size:15px;color:var(--ink)}
+.fam:hover{border-color:#b9ac97}
+.fam.active{border:2px solid var(--ink);padding:15px 17px}
+.fam strong{display:block;font-size:17px;margin-bottom:2px}
+.fam .fdesc{color:var(--muted);font-size:14px;display:block;margin-bottom:6px}
+.fam .fhead{font-size:14px;font-weight:700;color:var(--accent)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font-size:14px;cursor:pointer;color:var(--ink)}
+.tab:hover{border-color:#94a3b8}
+.tab.active{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{font-size:16px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+#canvas{width:100%;height:auto;display:block}
+.node-title{font-size:15px;font-weight:700;fill:var(--ink)}
+.node-sub{font-size:11.5px;fill:var(--muted)}
+.edge{fill:none;stroke:#64748b;stroke-width:2}
+.edge.money{stroke:#16a34a;stroke-width:2.6}
+.edge.tax{stroke:#dc2626;stroke-width:2.4;stroke-dasharray:8 6;animation:dashmove 1.2s linear infinite}
+.edge.neutral{stroke:#94a3b8;stroke-width:2;stroke-dasharray:3 4}
+@keyframes dashmove{to{stroke-dashoffset:-28}}
+.elabel{font-size:12.5px;font-weight:700;fill:var(--ink)}
+.esub{font-size:11px;fill:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:10px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;border:2px solid;vertical-align:-2px;margin-right:5px}
+.taxbar-wrap{padding:6px 0 2px}
+.taxbar-labels{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap;gap:4px}
+.taxbar{position:relative;height:34px;background:#f1ede4;border-radius:8px;margin-bottom:8px}
+.taxbar-fill{position:absolute;left:0;top:0;bottom:0;background:#d8cfae;border-radius:8px 0 0 8px}
+.taxbar-taxable{position:absolute;top:0;bottom:0;background:rgba(220,38,38,.30);border-left:2px dashed #dc2626}
+.taxbar-marker{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.taxbar-marker span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap}
+.taxbar-result{font-size:16px}
+.taxbar-note{font-size:14px;color:var(--muted)}
+.insight{border-left:4px solid var(--blue-bd);background:var(--blue-bg);border-radius:0 10px 10px 0;padding:12px 16px;font-size:15.5px;margin-bottom:16px}
+.insight strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--blue-bd);margin-bottom:4px}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps li{counter-increment:s;position:relative;padding:10px 12px 10px 52px;border-bottom:1px solid var(--line);font-size:15px}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.amt{font-weight:700;white-space:nowrap}
+.neg{color:#dc2626}.pos{color:#16a34a}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.gitem{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.gitem h3{margin:0 0 4px;font-size:14.5px}
+.gitem p{margin:0;font-size:13.5px;color:var(--muted)}
+.gtag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-bottom:6px;background:var(--amber-bg);color:#92400e}
+.cta-row{margin:8px 0 24px}
+.cta{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:18px}
+footer.site{padding:24px 0 56px;border-top:1px solid var(--line);margin-top:8px}
+footer.site p{font-size:13.5px;color:var(--muted);margin-bottom:8px;max-width:900px}
+@media(min-width:700px){.hero h1{font-size:42px}}
+</style>
+<link rel="canonical" href="https://clearlinefamily.com/explorer">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://clearlinefamily.com/explorer">
+<meta property="og:title" content="The Estate Explorer | Clearline Family">
+<meta property="og:description" content="An interactive explorer: three typical families, scenario toggles, and the Washington estate-tax bite drawn at each step. Planning estimates, not advice.">
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+<div class="brand"><a href="/">Clearline Family</a></div>
+</header>
+
+<div class="hero">
+<h1>The Estate Explorer</h1>
+<p>Three typical Eastside families. Toggle the scenarios and watch the money move, with Washington's estate-tax bite drawn at each step.</p>
+<p class="fine">Every family below is fictional and typical, not real. Every dollar figure is a planning estimate for education. Not tax or legal advice, and not a carrier illustration.</p>
+</div>
+
+<div class="fam-picker" id="famPicker"></div>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="card">
+<h2>The map</h2>
+<svg id="canvas" viewBox="0 0 1160 690" role="img" aria-label="Estate flow diagram"></svg>
+<div class="legend">
+<span><span class="sw" style="background:var(--blue-bg);border-color:var(--blue-bd)"></span>People</span>
+<span><span class="sw" style="background:var(--green-bg);border-color:var(--green-bd)"></span>Assets</span>
+<span><span class="sw" style="background:var(--amber-bg);border-color:var(--amber-bd)"></span>Fiduciaries &amp; trusts</span>
+<span><span class="sw" style="background:var(--red-bg);border-color:var(--red-bd)"></span>Tax collectors</span>
+<span><span class="sw" style="background:var(--slate-bg);border-color:var(--slate-bd)"></span>Court</span>
+<span style="margin-left:8px"><span style="color:#16a34a;font-weight:700">-</span> money flows &nbsp;
+<span style="color:#dc2626;font-weight:700">- -</span> tax taken &nbsp;
+<span style="color:#94a3b8;font-weight:700">···</span> decisions / authority</span>
+</div>
+</div>
+
+<div class="card">
+<h2>Against Washington's $3M exclusion</h2>
+<div class="taxbar-wrap" id="taxbar"></div>
+</div>
+
+<div class="insight" id="insight"></div>
+
+<div class="card">
+<h2>The funnel, step by step</h2>
+<ol class="steps" id="steps"></ol>
+</div>
+
+<div class="card">
+<h2>Who's who: the roles, in one line each</h2>
+<div class="gloss">
+<div class="gitem"><span class="gtag">Guardian</span><h3>Raises the minor kids</h3><p>Named in your wills. The human being who brings them up if you're both gone. Courts decide this only if you don't.</p></div>
+<div class="gitem"><span class="gtag">Custodian (UTMA)</span><h3>Manages a child's money until 21</h3><p>The default when insurance names a minor, then hands it all over outright at 21.</p></div>
+<div class="gitem"><span class="gtag">Trustee</span><h3>Manages trust assets by the trust's rules</h3><p>ILIT trustee: owns the policies, pays premiums, distributes per the trust. Family trustee: runs the kids' inheritance, including past 21.</p></div>
+<div class="gitem"><span class="gtag">Financial POA agent</span><h3>Manages YOUR money while you're alive but can't</h3><p>Pays bills, handles accounts. Authority ends at death. That's when the executor takes over.</p></div>
+<div class="gitem"><span class="gtag">Healthcare proxy</span><h3>Makes medical decisions if you can't</h3><p>Works alongside your written health care directive. Also ends at death.</p></div>
+<div class="gitem"><span class="gtag">Executor</span><h3>Settles the estate, then done</h3><p>Named in the will. Guides assets through probate into the trust, pays final debts and taxes, closes up shop.</p></div>
+</div>
+</div>
+
+<div class="cta-row">
+<a class="cta" href="/">Get your own family map</a>
+<p class="fine" style="margin-top:10px">Clearline Family builds a map like this from your real documents. Flat fee, quoted up front.</p>
+</div>
+
+<footer class="site">
+<p><strong>Assumptions behind the numbers:</strong> Washington estate-tax exclusion $3M per decedent for deaths on/after July 1, 2026, graduated 10 to 20% rates, no portability between spouses (verify current law with counsel. WA moved twice in twelve months); federal exemption $15M per person; community-property 50/50 split; life insurance the decedent owned is included in the gross estate; death benefits income-tax-free to beneficiaries.</p>
+<p><strong>Sources checked September 2026:</strong> WA Department of Revenue estate-tax tables and FAQ (the $3M exclusion, Table W 10 to 20% rates, no portability); IRS Revenue Procedure 2025-32 (the $15M federal exclusion and $19,000 annual gift exclusion). A QA pass verified every tax claim on this page against those primary sources, including the per-decedent math: Washington taxes each spouse's estate separately, so simultaneous death is tested against two $3M exclusions, not one.</p>
+<p><strong>Not advice:</strong> all figures are rough planning estimates for education and for discussion with a licensed estate-planning attorney and CPA. Not calculations to rely on, not carrier illustrations. Nothing here creates or names any trust. The 3-year rule on transferring existing policies into an ILIT, QDOT requirements for non-citizen spouses, and all filing questions are attorney/CPA-owned.</p>
+<p>Clearline Family. Not a law firm. Nothing on this site is legal advice.</p>
+</footer>
+
+</div>
+<script>
+"use strict";
+/* ================= Data ================= */
+const NW = 64; // node height
+const POS = {
+  s1:        { x: 60,  y: 80,  w: 150, type: "person" },
+  s2:        { x: 60,  y: 200, w: 150, type: "person" },
+  exspouse:  { x: 60,  y: 320, w: 150, type: "person" },
+  kids:      { x: 60,  y: 460, w: 150, type: "person" },
+  insurance: { x: 330, y: 80,  w: 180, type: "asset" },
+  realestate:{ x: 330, y: 220, w: 180, type: "asset" },
+  accounts:  { x: 330, y: 360, w: 180, type: "asset" },
+  poa1: { x: 330, y: 60,  w: 190, type: "fid" },
+  hc1:  { x: 330, y: 180, w: 190, type: "fid" },
+  poa2: { x: 330, y: 300, w: 190, type: "fid" },
+  hc2:  { x: 330, y: 420, w: 190, type: "fid" },
+  ilit:     { x: 620, y: 40,  w: 190, type: "fid" },
+  testtrust:{ x: 620, y: 240, w: 190, type: "fid" },
+  custodian:{ x: 620, y: 350, w: 190, type: "fid" },
+  guardian: { x: 620, y: 460, w: 190, type: "fid" },
+  executor: { x: 620, y: 570, w: 190, type: "fid" },
+  wa:    { x: 920, y: 130, w: 170, type: "gov" },
+  irs:   { x: 920, y: 260, w: 170, type: "gov" },
+  court: { x: 920, y: 390, w: 170, type: "court" },
+};
+const GOV = {
+  wa:    { title: "Washington State", sub: "Estate tax 10-20% over $3M" },
+  irs:   { title: "IRS / Federal", sub: "$0 under $15M per person" },
+  court: { title: "WA Court", sub: "Decides when no plan names one" },
+};
+function N(key, title, sub) {
+  const p = POS[key], g = GOV[key];
+  return Object.assign({}, p, { title: title || (g && g.title), sub: sub || (g && g.sub) });
+}
+
+const FAMILIES = [
+/* ---------------- Family 1: The Chens ---------------- */
+{
+  id: "chens", name: "The Chens",
+  desc: "Dual-income tech couple, Bellevue · ages 37 & 35 · kids 5 and 3",
+  headline: "$183K \u2192 $0",
+  nodes: {
+    s1: N("s1", "Dad \u00B7 37", "Insured \u00B7 $1.5M term"),
+    s2: N("s2", "Mom \u00B7 35", "Insured \u00B7 $1.5M term"),
+    kids: N("kids", "2 kids \u00B7 5 and 3", "Beneficiaries \u00B7 minors"),
+    insurance: N("insurance", "Life insurance $3M", "Two $1.5M term policies"),
+    realestate: N("realestate", "Home ~$1.6M", "Equity ~$700K"),
+    accounts: N("accounts", "Savings ~$890K", "401k \u00B7 brokerage \u00B7 529s"),
+    ilit: N("ilit", "ILIT", "Owns the $3M in policies"),
+    testtrust: N("testtrust", "Kids\u2019 trust", "HEMS \u00B7 staggered past 21"),
+    custodian: N("custodian", "UTMA custodian (TBD)", "Manages kids\u2019 $ to 21"),
+    guardian: N("guardian", "Guardian (TBD)", "Raises the kids"),
+    executor: N("executor", "Executor (TBD)", "Settles estate \u00B7 probate"),
+    poa1: N("poa1", "Dad\u2019s POA agent", "Financial decisions (TBD)"),
+    hc1: N("hc1", "Dad\u2019s health proxy", "Medical decisions (TBD)"),
+    poa2: N("poa2", "Mom\u2019s POA agent", "Financial decisions (TBD)"),
+    hc2: N("hc2", "Mom\u2019s health proxy", "Medical decisions (TBD)"),
+    wa: N("wa"), irs: N("irs"), court: N("court"),
+  },
+  scenarios: [
+  {
+    id: "c-dual-none", tab: "Both die \u00B7 no plan",
+    insight: "No tax is owed \u2014 each estate sits under Washington\u2019s $3M exclusion. But the kids\u2019 $4.6M goes through the court, a stranger may raise them, and everything is handed over outright at 21. The damage here isn\u2019t tax. It\u2019s control.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","custodian","guardian","court","wa","irs"],
+    edges: [
+      { f:"insurance", t:"custodian", kind:"money", label:"$3M \u2192 kids", sub:"custodian manages to 21, then outright" },
+      { f:"realestate", t:"court", kind:"neutral", label:"intestacy", sub:"court process \u00B7 delay + cost" },
+      { f:"accounts", t:"court", kind:"neutral", label:"intestacy", sub:"" },
+      { f:"court", t:"kids", kind:"money", label:"all assets \u2192 kids", sub:"via court-appointed conservator" },
+      { f:"court", t:"guardian", kind:"neutral", label:"court picks guardian", sub:"best-interests hearing \u2014 not your choice" },
+      { f:"guardian", t:"kids", kind:"neutral", label:"raises the kids", sub:"" },
+      { f:"s1", t:"wa", kind:"neutral", label:"$0 WA tax", sub:"each estate under $3M" },
+      { f:"s1", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+    ],
+    taxbar: { gross: 2.3, label: "Each estate at simultaneous death: ~$2.3M", note: "Two estates, two $3M exclusions \u2014 both fit. The tax story for this family lives in the next tab." },
+    steps: [
+      "Both die at once. <span class='amt'>$3M</span> of insurance plus <span class='amt'>~$1.6M</span> of other assets enter the system. The kids (5 and 3) inherit everything but can\u2019t legally receive any of it.",
+      "The insurance bypasses the estate \u2014 <span class='amt'>$3M</span> flows straight to the kids, managed by a UTMA custodian until 21, <strong>then handed over outright, all at once</strong>.",
+      "Everything else goes through intestacy: the court appoints a conservator, and the process costs time and money.",
+      "Tax: <span class='amt pos'>~$0</span>. Each parent\u2019s estate (~$2.3M) sits under Washington\u2019s <span class='amt'>$3M</span> exclusion. The damage here isn\u2019t tax \u2014 it\u2019s control.",
+      "The court picks the kids\u2019 guardian in a best-interests hearing. <strong>You don\u2019t choose.</strong>",
+    ]
+  },
+  {
+    id: "c-seq-none", tab: "Dad dies first \u00B7 no ILIT",
+    insight: "The marital deduction feels like a rescue \u2014 it\u2019s a deferral. Everything stacks into Mom\u2019s estate, Dad\u2019s $3M exclusion is wasted, and the tax lands harder on the second death: ~$183K.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","custodian","wa","irs"],
+    edges: [
+      { f:"insurance", t:"s2", kind:"money", label:"Dad\u2019s $1.5M \u2192 Mom", sub:"now \u00B7 marital deduction \u00B7 $0 tax" },
+      { f:"realestate", t:"s2", kind:"money", label:"his assets \u2192 Mom", sub:"$0 tax" },
+      { f:"accounts", t:"s2", kind:"money", label:"", sub:"" },
+      { f:"s2", t:"wa", kind:"tax", label:"\u2212~$183K WA tax", sub:"LATER \u00B7 at Mom\u2019s death" },
+      { f:"s2", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+      { f:"insurance", t:"custodian", kind:"later", label:"Mom\u2019s $1.5M \u2192 kids", sub:"later \u00B7 via custodian to 21" },
+      { f:"custodian", t:"kids", kind:"later", label:"", sub:"" },
+    ],
+    taxbar: { gross: 4.6, label: "Mom\u2019s estate at the second death: ~$4.6M", taxable: 1.6, tax: "~$183K" },
+    steps: [
+      "Dad dies. His <span class='amt'>$1.5M</span> of insurance and his share of the assets pass to Mom. Marital deduction: <span class='amt pos'>$0 tax</span>.",
+      "Mom now holds <span class='amt'>~$4.6M</span> \u2014 and she still owns her own <span class='amt'>$1.5M</span> policy. Nothing was taxed; everything stacked. Dad\u2019s <span class='amt'>$3M</span> exclusion died with him \u2014 Washington has no portability.",
+      "Mom dies years later. Her estate: ~$4.6M against a single <span class='amt'>$3M</span> exclusion.",
+      "Washington takes <span class='amt neg'>~$183K</span>. The $1.5M Dad left her got taxed on the way through \u2014 the marital deduction only postponed it.",
+      "The kids receive what\u2019s left through the custodian and the court \u2014 the same no-plan machinery as the first tab.",
+    ]
+  },
+  {
+    id: "c-seq-ilit", tab: "Dad dies first \u00B7 with ILITs",
+    insight: "ILITs break the stacking: each death\u2019s insurance bypasses the survivor\u2019s estate entirely. Same two deaths as the previous tab \u2014 ~$183K of tax becomes $0.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","ilit","testtrust","guardian","wa","irs"],
+    edges: [
+      { f:"insurance", t:"ilit", kind:"money", label:"Both policies \u2192 ILIT", sub:"never enters either taxable estate" },
+      { f:"realestate", t:"s2", kind:"money", label:"his assets \u2192 Mom", sub:"$0 tax \u00B7 marital deduction" },
+      { f:"accounts", t:"s2", kind:"money", label:"", sub:"" },
+      { f:"ilit", t:"kids", kind:"later", label:"HEMS \u00B7 past 21", sub:"at each death" },
+      { f:"s2", t:"testtrust", kind:"later", label:"her ~$1.6M \u2192 trust", sub:"later \u00B7 under the $3M exclusion" },
+      { f:"testtrust", t:"kids", kind:"later", label:"for the kids", sub:"" },
+      { f:"guardian", t:"kids", kind:"neutral", label:"raises the kids", sub:"your pick" },
+      { f:"s1", t:"wa", kind:"neutral", label:"$0", sub:"" },
+      { f:"s2", t:"wa", kind:"neutral", label:"$0 later", sub:"estate ~$1.6M < $3M" },
+      { f:"s2", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+    ],
+    taxbar: { gross: 1.6, label: "Mom\u2019s estate at the second death: ~$1.6M", note: "The $3M of insurance was never in her estate. Under the exclusion \u2014 $0 tax." },
+    steps: [
+      "Dad dies. His <span class='amt'>$1.5M</span> pays to the ILIT \u2014 for the kids, never entering Mom\u2019s estate. His other assets pass to Mom: <span class='amt pos'>$0 tax</span>.",
+      "Mom holds <span class='amt'>~$1.6M</span>. The insurance is simply not part of her world anymore.",
+      "Mom dies. Her <span class='amt'>$1.5M</span> pays to the ILIT \u2014 for the kids. Her own estate is ~$1.6M, under the <span class='amt'>$3M</span> exclusion.",
+      "Washington: <span class='amt pos'>$0</span>. Federal: <span class='amt pos'>$0</span>. The $3M did its job and was never taxed.",
+      "The kids\u2019 trust (HEMS, staggered past 21) plus your named guardian. This is the structure the ILIT exists to create.",
+    ]
+  },
+  {
+    id: "c-incap", tab: "Incapacity (alive)",
+    insight: "Death planning gets the attention; incapacity planning gets used. Without these documents, Mom would need a court order just to pay Dad\u2019s bills.",
+    nodes: ["s1","s2","poa1","hc1","poa2","hc2"],
+    edges: [
+      { f:"poa1", t:"s1", kind:"neutral", label:"manages finances", sub:"pays bills \u00B7 handles accounts" },
+      { f:"hc1", t:"s1", kind:"neutral", label:"medical decisions", sub:"per his health care directive" },
+      { f:"poa2", t:"s2", kind:"neutral", label:"in place", sub:"activates only if Mom is incapacitated" },
+      { f:"hc2", t:"s2", kind:"neutral", label:"in place", sub:"activates only if Mom is incapacitated" },
+    ],
+    taxbar: { incapacity: true },
+    steps: [
+      "Dad is incapacitated \u2014 alive, but can\u2019t act. Nothing dies, nothing transfers, no tax is owed. But someone must be able to act.",
+      "His financial POA agent steps in: pays the mortgage, manages the accounts, keeps the household running.",
+      "His healthcare proxy makes medical decisions, guided by his written health care directive.",
+      "The wills, trusts, and insurance sit untouched \u2014 they only activate at death. Incapacity is the POA documents\u2019 entire job.",
+      "Without these documents, even a spouse needs a court guardianship to act \u2014 delay and legal cost at the worst possible moment.",
+    ]
+  },
+  ]
+},
+/* ---------------- Family 2: The Hendersons ---------------- */
+{
+  id: "hendersons", name: "The Hendersons",
+  desc: "Pre-retiree couple, Bellevue \u00B7 ages 63 & 61 \u00B7 kids launched",
+  headline: "The wasted $3M exclusion",
+  nodes: {
+    s1: N("s1", "Him \u00B7 63", "Insured \u00B7 $500K whole life"),
+    s2: N("s2", "Her \u00B7 61", ""),
+    kids: N("kids", "2 adult kids", "Beneficiaries"),
+    insurance: N("insurance", "Life insurance $500K", "Whole life \u00B7 owned personally"),
+    realestate: N("realestate", "Home ~$1.8M", "Paid off"),
+    accounts: N("accounts", "Savings ~$2.3M", "401k $1.6M \u00B7 taxable $700K"),
+    ilit: N("ilit", "ILIT", "Would own the $500K policy"),
+    testtrust: N("testtrust", "Bypass trust", "Captures his $3M exclusion"),
+    custodian: N("custodian", "N/A", ""),
+    guardian: N("guardian", "N/A", ""),
+    executor: N("executor", "Executor (TBD)", "Settles estate \u00B7 probate"),
+    poa1: N("poa1", "His POA agent", "Financial decisions (TBD)"),
+    hc1: N("hc1", "His health proxy", "Medical decisions (TBD)"),
+    poa2: N("poa2", "Her POA agent", "Financial decisions (TBD)"),
+    hc2: N("hc2", "Her health proxy", "Medical decisions (TBD)"),
+    wa: N("wa"), irs: N("irs"), court: N("court"),
+  },
+  scenarios: [
+  {
+    id: "h-dual-none", tab: "Both die \u00B7 no plan",
+    insight: "Each estate (~$2.3M) sneaks under the $3M exclusion \u2014 ~$0 tax. But the $500K policy was owned personally, and nothing is planned for who manages what. The tax bomb is in the next tab.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","executor","wa","irs"],
+    edges: [
+      { f:"insurance", t:"kids", kind:"money", label:"$500K \u2192 kids", sub:"bypassed probate \u00B7 but inside the estate" },
+      { f:"realestate", t:"executor", kind:"neutral", label:"probate", sub:"" },
+      { f:"accounts", t:"executor", kind:"neutral", label:"probate", sub:"" },
+      { f:"executor", t:"kids", kind:"money", label:"remainder \u2192 kids", sub:"" },
+      { f:"s1", t:"wa", kind:"neutral", label:"~$0 WA tax", sub:"each estate under $3M" },
+      { f:"s1", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+    ],
+    taxbar: { gross: 2.3, label: "Each estate at simultaneous death: ~$2.3M", note: "Lucky, not planned. See the next tab for what usually happens instead." },
+    steps: [
+      "Both die at once. <span class='amt'>$500K</span> of insurance plus <span class='amt'>~$4.1M</span> of other assets. The adult kids inherit.",
+      "The insurance bypasses probate straight to the kids \u2014 but because it was <strong>owned personally</strong>, it counted inside the taxable estate.",
+      "Home and accounts go through probate: the executor settles, then distributes.",
+      "Tax: <span class='amt pos'>~$0</span>. Each estate (~$2.3M) fits under the <span class='amt'>$3M</span> exclusion. Lucky \u2014 not planned.",
+      "The danger: this only worked because both died together. The next tab is what usually happens instead.",
+    ]
+  },
+  {
+    id: "h-seq-none", tab: "He dies first \u00B7 exclusion wasted",
+    insight: "The most common expensive mistake in Washington: everything passes outright to the survivor, the first $3M exclusion evaporates, and the second death pays ~$184K that a bypass trust would have erased.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","wa","irs"],
+    edges: [
+      { f:"insurance", t:"s2", kind:"money", label:"$500K \u2192 her", sub:"now \u00B7 $0 tax" },
+      { f:"realestate", t:"s2", kind:"money", label:"everything \u2192 her", sub:"$0 tax \u00B7 marital deduction" },
+      { f:"accounts", t:"s2", kind:"money", label:"", sub:"" },
+      { f:"s2", t:"wa", kind:"tax", label:"\u2212~$184K WA tax", sub:"LATER \u00B7 at her death" },
+      { f:"s2", t:"kids", kind:"later", label:"remainder \u2192 kids", sub:"later" },
+      { f:"s2", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+    ],
+    taxbar: { gross: 4.6, label: "Her estate at the second death: ~$4.6M", taxable: 1.6, tax: "~$184K" },
+    steps: [
+      "He dies. Everything \u2014 the <span class='amt'>$500K</span> policy, the paid-off home, the <span class='amt'>$2.3M</span> in savings \u2014 passes outright to her. Marital deduction: <span class='amt pos'>$0 tax</span>.",
+      "She now holds <span class='amt'>~$4.6M</span>. His <span class='amt'>$3M</span> Washington exclusion died with him \u2014 there is no portability, and no bypass trust captured it.",
+      "She dies years later. One estate, <span class='amt'>~$4.6M</span>, one <span class='amt'>$3M</span> exclusion.",
+      "Washington takes <span class='amt neg'>~$184K</span> \u2014 on money that already survived a lifetime of income tax.",
+      "The kids receive what\u2019s left. The $184K bought them nothing.",
+    ]
+  },
+  {
+    id: "h-seq-plan", tab: "He dies first \u00B7 bypass trust",
+    insight: "Same death, different plumbing: $3M of assets fund a bypass trust at his death, capturing his exclusion forever. Her estate stays under $3M. Tax: ~$0.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","testtrust","executor","wa","irs"],
+    edges: [
+      { f:"realestate", t:"testtrust", kind:"money", label:"$3M \u2192 bypass trust", sub:"at his death \u00B7 exclusion captured" },
+      { f:"accounts", t:"s2", kind:"money", label:"remainder \u2192 her", sub:"$0 tax" },
+      { f:"insurance", t:"s2", kind:"money", label:"$500K \u2192 her", sub:"now" },
+      { f:"testtrust", t:"kids", kind:"later", label:"for the kids", sub:"later \u00B7 never taxed again" },
+      { f:"s2", t:"kids", kind:"later", label:"her ~$1.6M \u2192 kids", sub:"later \u00B7 under $3M" },
+      { f:"s1", t:"wa", kind:"neutral", label:"$0", sub:"bypass trust uses his exclusion" },
+      { f:"s2", t:"wa", kind:"neutral", label:"$0 later", sub:"her estate ~$1.6M < $3M" },
+    ],
+    taxbar: { gross: 1.6, label: "Her estate at the second death: ~$1.6M", note: "$3M sits in the bypass trust \u2014 outside her estate, never taxed again." },
+    steps: [
+      "He dies. Instead of everything passing outright, <span class='amt'>$3M</span> of assets fund a <strong>bypass (credit-shelter) trust</strong> \u2014 capturing his Washington exclusion permanently.",
+      "The trust is for her benefit during her life and the kids after \u2014 but it\u2019s not <em>in</em> her estate.",
+      "She holds the remaining <span class='amt'>~$1.6M</span> plus the <span class='amt'>$500K</span> policy. Her estate sits under <span class='amt'>$3M</span>.",
+      "She dies. Her estate: <span class='amt pos'>$0</span> Washington tax. The bypass trust passes to the kids: <span class='amt pos'>$0</span> again \u2014 it was never in her estate.",
+      "Same family, same assets, same deaths as the last tab. The only difference is where the first $3M went. (Moving the existing $500K policy into an ILIT would trigger the 3-year rule \u2014 an attorney designs the timing.)",
+    ]
+  },
+  {
+    id: "h-incap", tab: "Incapacity (alive)",
+    insight: "At 63 and 61, incapacity is the likeliest \u2018first event\u2019 \u2014 more likely than either death scenario. These documents are the plan you\u2019ll probably actually use.",
+    nodes: ["s1","s2","poa1","hc1","poa2","hc2"],
+    edges: [
+      { f:"poa1", t:"s1", kind:"neutral", label:"in place", sub:"activates only if he is incapacitated" },
+      { f:"hc1", t:"s1", kind:"neutral", label:"in place", sub:"activates only if he is incapacitated" },
+      { f:"poa2", t:"s2", kind:"neutral", label:"manages finances", sub:"pays bills \u00B7 handles accounts" },
+      { f:"hc2", t:"s2", kind:"neutral", label:"medical decisions", sub:"per her health care directive" },
+    ],
+    taxbar: { incapacity: true },
+    steps: [
+      "She has a stroke \u2014 alive, but can\u2019t manage the finances. Nothing transfers, no tax is owed. But the <span class='amt'>$2.3M</span> in accounts still needs managing.",
+      "Her financial POA agent steps in: handles the 401k, pays the property tax, keeps everything running.",
+      "Her healthcare proxy makes medical decisions, guided by her written directive.",
+      "Without these, he \u2014 her husband of 35 years \u2014 would need a court guardianship to manage <em>their own</em> accounts.",
+      "Every year without POA documents is a year betting against the odds.",
+    ]
+  },
+  ]
+},
+/* ---------------- Family 3: The Parkers ---------------- */
+{
+  id: "parkers", name: "The Parkers",
+  desc: "Blended family, Kirkland \u00B7 ages 52 & 48 \u00B7 3 kids from prior marriages",
+  headline: "$1M to the ex \u2014 or to your family",
+  nodes: {
+    s1: N("s1", "Him \u00B7 52", "Insured \u00B7 $1M term"),
+    s2: N("s2", "Her \u00B7 48", ""),
+    exspouse: N("exspouse", "Ex-spouse", "Still named on the $1M policy"),
+    kids: N("kids", "3 kids", "From prior marriages"),
+    insurance: N("insurance", "Life insurance $1M", "20-yr term \u00B7 on him"),
+    realestate: N("realestate", "Home ~$1.4M", "Equity ~$900K"),
+    accounts: N("accounts", "Savings ~$1.7M", "Investable $900K \u00B7 401k $800K"),
+    ilit: N("ilit", "ILIT", "Owns the $1M policy"),
+    testtrust: N("testtrust", "Family trust", "For her + the kids"),
+    custodian: N("custodian", "N/A", ""),
+    guardian: N("guardian", "Guardian (TBD)", "If minor kids involved"),
+    executor: N("executor", "Executor (TBD)", "Settles estate \u00B7 probate"),
+    poa1: N("poa1", "His POA agent", "Named by him (TBD)"),
+    hc1: N("hc1", "His health proxy", "Named by him (TBD)"),
+    poa2: N("poa2", "Her POA agent", "Financial decisions (TBD)"),
+    hc2: N("hc2", "Her health proxy", "Medical decisions (TBD)"),
+    wa: N("wa"), irs: N("irs"), court: N("court"),
+  },
+  scenarios: [
+  {
+    id: "p-dual-stale", tab: "Both die \u00B7 stale beneficiary",
+    insight: "Beneficiary designations override wills, trusts, and good intentions. The $1M doesn\u2019t go through the estate, the court, or your plan \u2014 it goes to the person named on the form. From 2019.",
+    nodes: ["s1","s2","exspouse","kids","insurance","realestate","accounts","court","wa","irs"],
+    edges: [
+      { f:"insurance", t:"exspouse", kind:"money", label:"$1M \u2192 ex-spouse", sub:"beneficiary form from 2019 \u00B7 overrides everything" },
+      { f:"realestate", t:"court", kind:"neutral", label:"intestacy fight", sub:"his kids vs. her kids" },
+      { f:"accounts", t:"court", kind:"neutral", label:"intestacy fight", sub:"" },
+      { f:"court", t:"kids", kind:"money", label:"remainder \u2192 kids", sub:"after delay + cost" },
+      { f:"s1", t:"wa", kind:"neutral", label:"$0 WA tax", sub:"each estate under $3M" },
+      { f:"s1", t:"irs", kind:"neutral", label:"$0 federal", sub:"" },
+    ],
+    taxbar: { gross: 2.3, label: "His estate at simultaneous death: ~$2.3M (the $1M policy he owned is included); hers: ~$1.3M", note: "Two estates, two $3M exclusions \u2014 both fit. The damage here isn\u2019t tax. It\u2019s the $1M going to the ex-spouse and the kids fighting in court." },
+    steps: [
+      "Both die. The <span class='amt'>$1M</span> policy bypasses the family entirely \u2014 it flies straight to the <strong>ex-spouse</strong>, named on a beneficiary form from 2019 and never updated.",
+      "No will, no trust, and three kids from two prior marriages: the home and the <span class='amt'>$1.7M</span> in savings go through intestacy \u2014 his kids vs. her kids, in court.",
+      "Washington takes <span class='amt pos'>~$0</span> \u2014 his ~$2.3M estate (the $1M counted, since he owned the policy) and her ~$1.3M estate each sit under their own $3M exclusion. The damage here isn\u2019t tax.",
+      "The family he meant to protect gets what\u2019s left after the delay, the legal fees, and the fight.",
+      "This entire scenario is fixed by a 10-minute form update and one attorney meeting. That\u2019s the point of the next tab.",
+    ]
+  },
+  {
+    id: "p-dual-plan", tab: "Both die \u00B7 beneficiary fixed + plan",
+    insight: "Same deaths. The $1M now funds a trust for the current family, the kids\u2019 shares are defined, and the tax is $0. The difference is paperwork \u2014 done while everyone was alive to sign it.",
+    nodes: ["s1","s2","kids","insurance","realestate","accounts","ilit","testtrust","executor","wa","irs"],
+    edges: [
+      { f:"insurance", t:"ilit", kind:"money", label:"$1M \u2192 ILIT", sub:"beneficiary updated \u00B7 never in the estate" },
+      { f:"realestate", t:"executor", kind:"neutral", label:"probate", sub:"" },
+      { f:"accounts", t:"executor", kind:"neutral", label:"probate", sub:"" },
+      { f:"executor", t:"testtrust", kind:"money", label:"funds family trust", sub:"per his will" },
+      { f:"ilit", t:"testtrust", kind:"money", label:"for the family", sub:"HEMS distributions" },
+      { f:"testtrust", t:"kids", kind:"money", label:"defined shares", sub:"no fight" },
+      { f:"testtrust", t:"s2", kind:"money", label:"for her", sub:"lifetime benefit" },
+      { f:"s1", t:"wa", kind:"neutral", label:"$0 WA tax", sub:"$2.6M < $3M" },
+    ],
+    taxbar: { gross: 2.6, label: "Gross estate: ~$2.6M (the $1M bypassed it entirely)", note: "Under the $3M exclusion \u2014 $0 tax, and every dollar went where he intended." },
+    steps: [
+      "Both die \u2014 but this time the beneficiary form was updated years ago, and the wills and trust were signed.",
+      "The <span class='amt'>$1M</span> pays to the ILIT \u2014 for the current family, never entering the taxable estate. The ex-spouse gets nothing.",
+      "Home and savings go through probate into the family trust: defined shares for her and each of the three kids. No fight.",
+      "Washington: <span class='amt pos'>$0</span> \u2014 the gross estate is $2.6M, under the <span class='amt'>$3M</span> exclusion.",
+      "Blended families don\u2019t need more love. They need clearer paperwork.",
+    ]
+  },
+  {
+    id: "p-incap", tab: "Incapacity (alive)",
+    insight: "In a blended family, incapacity is where things get weird fastest: whose kids decide, who pays whose bills, and who the hospital listens to.",
+    nodes: ["s1","s2","poa1","hc1","poa2","hc2"],
+    edges: [
+      { f:"poa1", t:"s1", kind:"neutral", label:"manages HIS finances", sub:"named by him \u2014 not the ex, not the loudest kid" },
+      { f:"hc1", t:"s1", kind:"neutral", label:"medical decisions", sub:"hospital listens to the proxy, not next-of-kin" },
+      { f:"poa2", t:"s2", kind:"neutral", label:"in place", sub:"her own accounts, her own agent" },
+      { f:"hc2", t:"s2", kind:"neutral", label:"in place", sub:"activates only if she is incapacitated" },
+    ],
+    taxbar: { incapacity: true },
+    steps: [
+      "He\u2019s incapacitated. His POA agent \u2014 named by <em>him</em> \u2014 manages his finances. Not his ex-spouse, not whichever kid shouts loudest.",
+      "His healthcare proxy makes medical decisions. Without one, the hospital looks to next-of-kin \u2014 a list that doesn\u2019t know about second marriages.",
+      "Her POA documents are separate and in place, covering her own accounts and decisions.",
+      "Blended means more people with opinions and fewer default answers. The documents <em>are</em> the answers.",
+      "No tax, no court, no drama \u2014 if the forms exist.",
+    ]
+  },
+  ]
+},
+];
+/* ================= Rendering engine ================= */
+const svg = document.getElementById("canvas");
+const NS = "http://www.w3.org/2000/svg";
+const TYPE_STYLE = {
+  person: ["var(--blue-bg)",  "var(--blue-bd)"],
+  asset:  ["var(--green-bg)", "var(--green-bd)"],
+  fid:    ["var(--amber-bg)", "var(--amber-bd)"],
+  gov:    ["var(--red-bg)",   "var(--red-bd)"],
+  court:  ["var(--slate-bg)", "var(--slate-bd)"],
+};
+let famIdx = 0, scenIdx = 0;
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function initDefs() {
+  const defs = el("defs", {}, svg);
+  const markers = { arrow: "#64748b", arrowG: "#16a34a", arrowR: "#dc2626" };
+  for (const id in markers) {
+    const m = el("marker", { id: id, viewBox: "0 0 10 10", refX: 8, refY: 5,
+      markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M 0 1 L 9 5 L 0 9 z", fill: markers[id] }, m);
+  }
+}
+function edgeKind(kind) {
+  if (kind === "money") return { cls: "edge money", marker: "arrowG" };
+  if (kind === "tax")   return { cls: "edge tax", marker: "arrowR" };
+  if (kind === "later") return { cls: "edge money", marker: "arrowG", dash: "7 5" };
+  return { cls: "edge neutral", marker: "arrow" };
+}
+function cubicPoint(x1,y1,c1x,c1y,c2x,c2y,x2,y2,t) {
+  const u = 1 - t;
+  return {
+    x: u*u*u*x1 + 3*u*u*t*c1x + 3*u*t*t*c2x + t*t*t*x2,
+    y: u*u*u*y1 + 3*u*u*t*c1y + 3*u*t*t*c2y + t*t*t*y2,
+  };
+}
+function drawEdge(e, nodes) {
+  const a = nodes[e.f], b = nodes[e.t];
+  if (!a || !b) return;
+  const x1 = a.x + a.w, y1 = a.y + NW / 2;
+  const x2 = b.x - 6,   y2 = b.y + NW / 2;
+  const leftward = x2 < x1;
+  const dx = Math.max(50, Math.abs(x2 - x1) / 2);
+  const c1x = leftward ? x1 - dx : x1 + dx;
+  const c2x = leftward ? x2 + dx : x2 - dx;
+  const k = edgeKind(e.kind);
+  const p = el("path", {
+    d: "M " + x1 + " " + y1 + " C " + c1x + " " + y1 + ", " + c2x + " " + y2 + ", " + x2 + " " + y2,
+    class: k.cls, "marker-end": "url(#" + k.marker + ")",
+  }, svg);
+  if (k.dash) p.style.strokeDasharray = k.dash;
+  if (e.label) {
+    const mid = cubicPoint(x1,y1,c1x,y1,c2x,y2,x2,y2, 0.5);
+    const g = el("g", {}, svg);
+    const bg = el("rect", { fill: "#ffffff", opacity: 0.92, rx: 4 }, g);
+    const t1 = el("text", { x: mid.x, y: mid.y - 4, "text-anchor": "middle", class: "elabel" }, g);
+    t1.textContent = e.label;
+    let bb = t1.getBBox();
+    let h = bb.height + 8, y0 = bb.y - 4;
+    if (e.sub) {
+      const t2 = el("text", { x: mid.x, y: mid.y + 12, "text-anchor": "middle", class: "esub" }, g);
+      t2.textContent = e.sub;
+      const bb2 = t2.getBBox();
+      bb = { x: Math.min(bb.x, bb2.x), width: Math.max(bb.width, bb2.width) };
+      h = (bb2.y + bb2.height) - y0 + 4;
+    }
+    bg.setAttribute("x", bb.x - 6); bg.setAttribute("y", y0);
+    bg.setAttribute("width", bb.width + 12); bg.setAttribute("height", h);
+  }
+}
+function drawNode(n) {
+  const st = TYPE_STYLE[n.type];
+  const g = el("g", {}, svg);
+  el("rect", { x: n.x, y: n.y, width: n.w, height: NW, rx: 10, fill: st[0], stroke: st[1], "stroke-width": 2 }, g);
+  const t = el("text", { x: n.x + 14, y: n.y + 27, class: "node-title" }, g);
+  t.textContent = n.title;
+  const s = el("text", { x: n.x + 14, y: n.y + 47, class: "node-sub" }, g);
+  s.textContent = n.sub;
+}
+function fmtM(v) { return "$" + v.toFixed(1) + "M"; }
+function renderTaxbar(tb) {
+  const box = document.getElementById("taxbar");
+  if (tb.incapacity) {
+    box.innerHTML = "<div class='taxbar-note'>No tax event \u2014 nobody died. This scenario is about <strong>who can act</strong>, not where the money goes.</div>";
+    return;
+  }
+  const max = Math.max(tb.gross, 3.3);
+  const pct = function(v){ return (v / max * 100).toFixed(1) + "%"; };
+  let html = "<div class='taxbar-labels'><span>Estate at this death: <strong>" + fmtM(tb.gross) + "</strong></span>" +
+    "<span class='fine'>WA exclusion marked on the bar</span></div>";
+  html += "<div class='taxbar'><div class='taxbar-fill' style='width:" + pct(Math.min(tb.gross, 3)) + "'></div>";
+  if (tb.taxable) {
+    html += "<div class='taxbar-taxable' style='left:" + pct(3) + ";width:" + pct(tb.taxable) + "'></div>";
+  }
+  html += "<div class='taxbar-marker' style='left:" + pct(3) + "'><span>$3M</span></div></div>";
+  if (tb.tax) {
+    html += "<div class='taxbar-result'>Taxable: <strong>" + fmtM(tb.taxable) + "</strong> \u2192 Washington tax <strong class='neg'>" + tb.tax + "</strong> <span class='fine'>(estimate)</span></div>";
+  } else {
+    html += "<div class='taxbar-result'>Taxable: <strong>$0</strong> \u2192 Washington tax <strong class='pos'>$0</strong></div>";
+  }
+  if (tb.note) html += "<div class='taxbar-note' style='margin-top:6px'>" + tb.note + "</div>";
+  if (tb.label) html = "<div class='taxbar-note' style='margin-bottom:8px'>" + tb.label + "</div>" + html;
+  box.innerHTML = html;
+}
+function renderScenario() {
+  const fam = FAMILIES[famIdx], sc = fam.scenarios[scenIdx];
+  svg.innerHTML = "";
+  initDefs();
+  sc.edges.forEach(function(e){ drawEdge(e, fam.nodes); });
+  sc.nodes.forEach(function(id){ if (fam.nodes[id]) drawNode(fam.nodes[id]); });
+  renderTaxbar(sc.taxbar);
+  document.getElementById("insight").innerHTML = "<strong>The takeaway</strong>" + sc.insight;
+  document.getElementById("steps").innerHTML = sc.steps.map(function(s){ return "<li>" + s + "</li>"; }).join("");
+  const tabs = document.querySelectorAll("#tabs .tab");
+  tabs.forEach(function(t, j){ t.classList.toggle("active", j === scenIdx); });
+}
+function renderTabs() {
+  const fam = FAMILIES[famIdx];
+  const box = document.getElementById("tabs");
+  box.innerHTML = "";
+  fam.scenarios.forEach(function(sc, i) {
+    const b = document.createElement("button");
+    b.className = "tab" + (i === scenIdx ? " active" : "");
+    b.textContent = sc.tab;
+    b.addEventListener("click", function(){ scenIdx = i; renderScenario(); });
+    box.appendChild(b);
+  });
+}
+function renderFamPicker() {
+  const box = document.getElementById("famPicker");
+  box.innerHTML = "";
+  FAMILIES.forEach(function(fam, i) {
+    const b = document.createElement("button");
+    b.className = "fam" + (i === famIdx ? " active" : "");
+    b.innerHTML = "<strong>" + fam.name + "</strong><span class='fdesc'>" + fam.desc + "</span><span class='fhead'>" + fam.headline + "</span>";
+    b.addEventListener("click", function(){ famIdx = i; scenIdx = 0; renderFamPicker(); renderTabs(); renderScenario(); });
+    box.appendChild(b);
+  });
+}
+renderFamPicker();
+renderTabs();
+renderScenario();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "38de4f0a69944b3f93feeac0a290a1c2"}'></script>
+</body>
+</html>
