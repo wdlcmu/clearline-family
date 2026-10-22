@@ -162,7 +162,7 @@ posthog.register({site: 'clearline-family'});
 
 <div class="quizbox" id="quiz">
   <div id="qstart">
-    <button type="button" class="startbtn big" id="heroStart">Start the 2 minute check</button>
+    <button type="button" class="startbtn big" id="heroStart">Start the check</button>
     <div class="steps inquiz" aria-label="How the check works">
       <div class="stepitem"><span class="stepicon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h4"/><path d="M9 16.2l1.6 1.6 2.8-2.8"/></svg></span><span class="steptext">1. Answer 10 questions</span></div>
       <span class="steparrow" aria-hidden="true">&rarr;</span>
@@ -170,7 +170,7 @@ posthog.register({site: 'clearline-family'});
       <span class="steparrow" aria-hidden="true">&rarr;</span>
       <div class="stepitem"><span class="stepicon warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4L21.5 20h-19z"/><path d="M12 10v4.2M12 17h.01"/></svg></span><span class="steptext">3. Know the traps</span></div>
     </div>
-    <p class="qmicro">About 2 minutes. Nothing saved or sent.</p>
+    <p class="qmicro">About 2 to 3 minutes. Nothing saved or sent.</p>
   </div>
   <div id="qzone"></div>
   <div id="rzone"></div>
@@ -232,7 +232,7 @@ var QUESTIONS = [
    {t:"Mostly my partner", s:{r1:1, r4:1}},
    {t:"My partner earns. I run the home and the kids.", s:{r1:1}, flag:"caregiver"},
    {t:"No one depends on my income", s:{r5:1}}]},
- {id:"q3", text:"What would worry you most in the first year after a death?", hint:"Pick the one that sits heaviest.",
+ {id:"q3", text:"If you died, what worries you most?", hint:"Pick the one that sits heaviest.",
   options:[
    {t:"Paying off debts", s:{}},
    {t:"Keeping household income going", s:{r1:1}},
@@ -256,12 +256,12 @@ var QUESTIONS = [
    {t:"Lowest cost that truly covers the need", s:{r1:2, r2:1}},
    {t:"A middle path", s:{r4:2, r2:1}},
    {t:"Build something long term", s:{r5:2, r4:2}}]},
- {id:"q7", text:"Might you ever put a lump sum into a policy?", hint:"For example money from a maturing CD, a bonus, or an inheritance.",
+ {id:"q7", text:"Might you ever put a lump sum into a policy?", hint:"Like a bonus, a CD payout, or an inheritance.",
   options:[
    {t:"Yes, possibly", s:{}, trap:"mec"},
    {t:"No", s:{}},
    {t:"I already have money in a policy like that", s:{r6:1}, trap:"mec"}]},
- {id:"q8", text:"Do you have a policy with a loan on it, or one that is paid up?", hint:"Both are common. Both hide surprises.",
+ {id:"q8", text:"Does one of your policies have a loan? Or is one paid up?", hint:"Both are common. Both hide surprises.",
   options:[
    {t:"There is a loan on my policy", s:{r6:4}, trap:"loan"},
    {t:"I have a paid up policy", s:{r6:4}, trap:"paidup"},
@@ -272,56 +272,69 @@ var QUESTIONS = [
    {t:"One lump sum", s:{r5:1}},
    {t:"Steady payments over time", s:{}, trap:"settle"},
    {t:"Not sure", s:{}, trap:"settle"}]},
- {id:"q10", text:"Would you want the option to make coverage permanent later, without new health checks?", hint:"Health changes. Options bought young are cheap.",
+ {id:"q10", text:"Want the choice to keep cover for life? With no new health checks, later?", hint:"Health changes. Options bought young are cheap.",
   options:[
    {t:"Yes, that option matters to me", s:{r2:3}},
    {t:"No, a set term is fine", s:{r1:1}},
    {t:"I had not thought about it", s:{r2:1}}]}
 ];
 var RESULTS = {
- r1:{name:"Level term life insurance", looks:"A set number of years of coverage, often 20 or 30, sized to the years your family could not self-fund. It is the lowest cost way to put a large death benefit in place, and it is built to expire after the need does."},
- r2:{name:"Convertible term life insurance", looks:"Term coverage now, with a written option to convert some or all of it to permanent coverage later, without new medical underwriting. The health class from when you started carries over. Producers treat the conversion window and its deadline as the valuable part."},
- r3:{name:"Your own policy alongside work coverage", looks:"An individual policy you own outright, sized to the real need, with the employer group policy treated as a bonus on top. The policy you own cannot be lost in a layoff, a job change, or retirement."},
- r4:{name:"A term and permanent blend", looks:"Term coverage carries the big, time-limited needs like the mortgage and the school years. A smaller permanent piece covers the needs that never expire, like final costs or a dependent who will need support for life."},
- r5:{name:"Permanent coverage built to last for life", looks:"Whole life or guaranteed universal life coverage that does not expire, sized with a keep-the-principal mindset: the benefit is the plan itself, meant to be there at death whenever death comes."},
- r6:{name:"Start with a review of the policy you already have", looks:"Before any talk of new coverage, a producer would read the policy you own: its cash value, any loan and unpaid interest, its funding pace, and its payout settings. Many families find the fix is inside the policy they already hold."}
+ r1:{name:"Level term life insurance", looks:"Cover for a set run of years. Often 20 or 30 years. It is the cheapest way to buy big cover. It ends when the need ends."},
+ r2:{name:"Convertible term life insurance", looks:"Term cover now. A built-in switch lets you go life-long later. No new health checks are needed. Your health class from today carries over. Watch the switch deadline."},
+ r3:{name:"Your own policy alongside work coverage", looks:"A policy you own outright. It is sized to the real need. Work cover is a bonus on top. It stays yours through job changes."},
+ r4:{name:"A term and permanent blend", looks:"Term cover holds the big needs. The mortgage and the school years. A small life-long piece holds the rest. Final costs and life-long care never expire."},
+ r5:{name:"Permanent coverage built to last for life", looks:"Cover built to never expire. It pays whenever death comes. Whole life works this way. So does guaranteed universal life. It costs more for that certainty."},
+ r6:{name:"Start with a review of the policy you already have", looks:"Read the policy you own first. Check cash value, loans, and unpaid interest. Check funding pace and payout settings. The fix may sit inside it already."}
 };
 var WHY_SIT = {
- q1_0:["Right now the plan only has to protect you, so it can stay simple and lean.","With no dependents in the picture, the job of coverage is smaller and more personal.","When it is just you, producers focus on debts, final costs, and anyone who would be left holding them."],
- q1_1:["With a partner counting on shared income, the plan has to hold for two people, not one.","When two lives run on one household budget, a death changes the math for the one who remains.","Partners often insure each other, because the surviving partner inherits every bill the two of you split."],
- q1_2:["With kids at home, the need is at its highest and the budget is real.","While the kids are young, a death would hit the family budget hardest and for the longest stretch.","With children counting on you, coverage has a clear job for the next couple of decades."],
- q1_3:["With kids grown and parents aging, the need shifts from raising a family to closing out obligations and leaving things tidy.","At this stage, producers look at final costs, estate loose ends, and help you may owe your own parents.","With the big child-raising years behind you, coverage becomes about certainty rather than size."],
- q2_2:["A caregiver's work has a real price, even without a paycheck. Childcare and household help would have to be bought for years.","Income based sizing values a stay at home parent at zero, which is wrong on the ground. Producers price the work itself.","If the parent who runs the home were gone, the surviving parent would have to buy that work or cut their own hours to do it."]
+ q1_0:["The plan just has to cover you. So it can stay small and simple.","No one counts on your pay right now. The cover job stays small.","When it is just you, debts matter most. Final costs matter next."],
+ q1_1:["A partner counts on shared income. The plan must hold for two.","Two lives run on one household budget. A death changes all the math.","Partners often insure each other. The survivor still owes every shared bill."],
+ q1_2:["Kids at home means need at its peak. The budget is real too.","Young kids need the most years of support. A death hits hardest now.","Children count on you each day. Cover has a clear job for years."],
+ q1_3:["Kids are grown, and parents may need help. The need shifts to loose ends.","The big kid years are behind you. Final costs and loose ends lead now.","Size matters less at this stage. Certainty matters more."],
+ q2_2:["Care work has real value, paycheck or not. Families would buy that help for years.","Home work gets priced at zero by pay math. Producers price the work itself.","If the home parent died, help must be bought. Or work hours must be cut."]
 };
 var WHY_TYPE = {
- r1:["level term puts the largest death benefit in place per dollar for the years that matter most.","term coverage matches a need that has an end date, so you stop paying when the need stops.","producers reach for level term first when the window is clear and the budget is tight."],
- r2:["convertible term keeps a door open: permanent coverage later, at the health class you have today, with no new medical checks.","it costs a little more than the plainest term, and what it buys is an option on your current good health.","flexibility is the point here, because a lot can change in twenty years and health is one of the things that can."],
- r3:["coverage through a job ends when the job does, so families often own a policy outright and treat the work benefit as extra.","an individual policy is priced on your health today and stays yours through layoffs, job changes, and retirement.","producers size the policy you own to the full need, then count group coverage as a cushion, never as the foundation."],
- r4:["a blend lets each kind of coverage do the job it is cheapest at: term for the big temporary needs, permanent for the ones that never end.","most family needs expire, and a few never do. Matching one product to each kind is often cheaper than forcing one product to do both.","this is the shape producers land on when the horizon answers point in two directions at once."],
- r5:["permanent coverage is built to be there at death whenever death comes, which is what a lifetime need calls for.","when the goal is money that outlives you, expiring coverage is the wrong tool, even when it is cheaper.","families in this spot accept a higher cost as the price of certainty that the benefit will exist."],
- r6:["the most valuable next step is information: what the existing policy really promises after loans, funding pace, and payout settings are counted.","new coverage talk is premature until the policy in hand is understood. Its traps and its value are both already bought and paid for.","a careful review often finds the answer inside the current contract, in its loan balance, its maturity terms, or its payout option."]
+ r1:["Level term gives the most cover per dollar. It fits the years that matter most.","Term cover matches a need with an end date. You stop paying when it stops.","Producers reach for level term first here. The window is clear, and cost stays low."],
+ r2:["Convertible term keeps a door open. Life-long cover later needs no new health checks.","It costs a bit more than plain term. What it buys is choice later.","Much can change in twenty years. Health is one of those things. Flexibility guards against that."],
+ r3:["Work cover ends when the job ends. A policy you own stays yours.","Your own policy is priced on health today. It survives layoffs and job changes.","Producers size your own policy to full need. Work cover is just a cushion."],
+ r4:["Term does the big, short jobs cheaply. Permanent does the lasting jobs.","Most needs expire. A few never do. One kind rarely fits both well.","Your horizon points two ways at once. A blend is the shape producers land on."],
+ r5:["Permanent cover is there at death, whenever it comes. A life-long need calls for that.","The goal is money that outlives you. Expiring cover is the wrong tool here.","Families here accept a higher cost. They pay it for certainty."],
+ r6:["Facts come first in a review. Loans, funding pace, and payout settings all count.","New cover talk is too soon. The policy in hand is not understood yet.","A careful review often finds the answer inside. Loans or payout settings may hold it."]
 };
 var WHY_HORIZON = {
- q5_0:"Your horizon points the same way: cover the years until the kids can stand on their own.",
- q5_1:"Your horizon points the same way: the coverage years line up with the mortgage years.",
- q5_2:"A whole life horizon is exactly what this kind of coverage is built for.",
- q5_3:"Since the horizon is not settled yet, keeping options open matters more than locking a design in."
+ q5_0:"That matches your horizon: the kid years.",
+ q5_1:"That matches your horizon: the mortgage years.",
+ q5_2:"That matches your horizon: cover for life.",
+ q5_3:"Your horizon is not settled yet. Keeping options open matters most."
 };
 var SIZE_NOTES = {
- q3_0:"How a producer would size it: the DIME method. Debts first, then income for the years family needs it, then the mortgage, then school costs. Subtract savings and any coverage already in place. The gap is the working number.",
- q3_1:"How a producer would size it: start with income replacement, the years your family would need your earnings replaced, then add debts, the mortgage, and school costs with the DIME method. Subtract what you already have.",
- q3_2:"How a producer would size it: the mortgage balance anchors the DIME method, with debts, income years, and school costs added, and existing coverage and savings subtracted to find the real gap.",
- q3_3:"How a producer would size it: education costs per child go into the DIME method alongside debts, income years, and the mortgage. Existing coverage and savings come off the total.",
- q3_4:"How a producer would size it: final expenses and loose ends are usually the smallest bucket in the DIME method, after debts, income years, the mortgage, and school costs. Even so, producers count them explicitly rather than rounding them away."
+ q3_0:"How producers size it: DIME. Debts come first, as you flagged. Add income for the need years. Add the mortgage and school costs. Take off savings and cover you have. The gap is the working size.",
+ q3_1:"How producers size it: DIME. Income years come first, as you flagged. Add debts, the mortgage, and school costs. Take off savings and cover you have. The gap is the working size.",
+ q3_2:"How producers size it: DIME. The mortgage anchors it, as you flagged. Add debts and income years. Add school costs too. Take off savings and cover you have. The gap is the working size.",
+ q3_3:"How producers size it: DIME. School costs count per child, as you flagged. Add debts, income years, and the mortgage. Take off savings and cover you have. The gap is the working size.",
+ q3_4:"How producers size it: DIME. Final costs are the smallest part. Producers still count them fully. Add debts, income years, mortgage, and school. Take off savings and cover you have. The gap is the working size."
 };
 var TRAPS = {
- mec:{title:"Watch for: the fast funding trap", text:"Money put into a cash value policy faster than the federal 7-pay limit turns it into a modified endowment contract. Money out is then taxed on gains first, plus a 10 percent penalty before age 59 and a half. A single premium always creates one. It can be fine when the goal is only the death benefit, and a real problem when the plan was to tap the money later."},
- loan:{title:"Watch for: the loan balance", text:"At death, a beneficiary receives the face amount minus any policy loan and unpaid interest. The cash value is not added on top. If a loan and its interest outgrow the policy, the policy can lapse and leave a tax bill behind."},
- paidup:{title:"Worth knowing: paid up is not matured", text:"Finishing premiums means a policy is paid up. It matures at death, at the contract's maturity age, or when cash value grows to equal the face amount. Modern contracts usually set maturity at age 121. An old policy nearing an age 100 maturity needs a plan, because a maturity payout is taxed on the gain."},
- settle:{title:"Worth knowing: how the money arrives", text:"A death benefit can often be paid as a lump sum or as steady payments. A straight life income option pays the most per month and stops entirely at the beneficiary's death. Options with certain in the name guarantee a period or an amount, so value can pass on."},
- group:{title:"Worth knowing: the $50,000 line at work", text:"Employer paid group coverage is tax free to you only on the first $50,000. Above that, the IRS counts premium value as taxable income. And group coverage usually ends or shrinks when the job does."},
- caregiver:{title:"Worth knowing: the unpaid job counts", text:"Producers using the needs approach price a stay at home parent's work directly: years of childcare and household help the family would have to buy. Calculators that multiply income miss this completely."}
+ mec:{title:"Watch for: the fast funding trap", text:"Fund too fast, and tax rules flip. The policy turns into a MEC. Gains get taxed first. A penalty can hit before 59 and a half. One lump sum always makes one. Fine for death cover alone, though."},
+ loan:{title:"Watch for: the loan balance", text:"At death, family gets the face amount. Any loan and unpaid interest come off first. Cash value is not added on top. If loans outgrow the policy, it can lapse. A tax bill can follow a lapse."},
+ paidup:{title:"Worth knowing: paid up is not matured", text:"Paid up means premiums are done. Maturity comes at death or a set age. Most new policies set that age at 121. An old policy near 100 needs a plan. Its payout is taxed on the gain."},
+ settle:{title:"Worth knowing: how the money arrives", text:"Money can arrive as one lump sum. Or as steady payments over time. Straight life pays the most per month. It stops fully when the beneficiary dies. Certain options promise a set period or amount."},
+ group:{title:"Worth knowing: the $50,000 line at work", text:"Work cover is tax free only to $50,000. Past that, premium value counts as income. Group cover ends or shrinks with the job."},
+ caregiver:{title:"Worth knowing: the unpaid job counts", text:"Needs math prices a home parent's work. It counts years of childcare and home help. The family would have to buy that help. Income math misses this fully."}
 };
+function optionVisible(qi, oi, ans){
+  // State from q4 (index 3): 0 = no coverage, 1 = job only, 2 = job + own policy, 3 = own policy.
+  // A later option that assumes an individually owned policy, or denies having one,
+  // is only shown when it does not contradict the q4 answer.
+  var cov = ans[3];
+  if (cov === undefined) return true;
+  if (qi === 6 && oi === 2) return cov === 2 || cov === 3;   // q7: "I already have money in a policy like that"
+  if (qi === 7){
+    if (oi === 3) return cov === 0;                          // q8: "I have no policy"
+    if (oi === 0 || oi === 1) return cov === 2 || cov === 3; // q8: loan on my policy / paid up policy
+  }
+  return true;
+}
 function computeResult(ans){
   var score = {r1:0, r2:0, r3:0, r4:0, r5:0, r6:0};
   var traps = [];
@@ -351,7 +364,7 @@ function computeResult(ans){
   }
   var pick = function(pool, seed){ return pool[Math.abs(seed) % pool.length]; };
   var seed = ans[0]*7 + ans[4]*3 + ans[5];
-  var why = pick(sitPool, seed) + " Families in situations like yours often look at " + RESULTS[best].name.charAt(0).toLowerCase() + RESULTS[best].name.slice(1) + ", because " + pick(WHY_TYPE[best], seed + ans[1]) + " " + WHY_HORIZON["q5_" + ans[4]];
+  var why = pick(sitPool, seed) + " " + pick(WHY_TYPE[best], seed + ans[1]) + " " + WHY_HORIZON["q5_" + ans[4]];
   return { result: best, score: score, traps: traps, why: why, sizeNote: SIZE_NOTES["q3_" + ans[2]] };
 }
 /* === ENGINE END === */
@@ -362,7 +375,7 @@ function computeResult(ans){
   var answers = [];
   var current = -1;
   var guard = false;
-  function lock(){ if (guard) return true; guard = true; setTimeout(function(){ guard = false; }, 450); return false; }
+  function lock(){ if (guard) return true; guard = true; setTimeout(function(){ guard = false; }, 200); return false; }
   function renderQuestion(){
     rzone.innerHTML = "";
     var q = QUESTIONS[current];
@@ -371,6 +384,7 @@ function computeResult(ans){
       '<div class="progress"><i style="width:' + pct + '%"></i></div>' +
       '<h3>' + q.text + '</h3><p class="hint">' + q.hint + '</p><div class="opts">';
     q.options.forEach(function(o, idx){
+      if (!optionVisible(current, idx, answers)) return;
       html += '<button type="button" class="opt" data-idx="' + idx + '">' + o.t + '</button>';
     });
     html += '</div><div class="quiznav">' +
@@ -408,8 +422,8 @@ function computeResult(ans){
       html += '<div class="trap"><strong>' + t.title + '</strong><p>' + t.text + '</p></div>';
     });
     html += '<div class="sizenote">' + out.sizeNote + '</div>' +
-      '<p class="fine">General education only. This result describes what families in similar situations often look at. It is not insurance advice, not a recommendation for your family, and not an offer of coverage. Clearline Family\u2019s Washington producer licensing is in progress, and no insurance is sold through this site. A licensed producer would confirm your health, budget, and existing coverage before any real recommendation.</p>' +
-      '<div class="quiznav"><button type="button" class="againbtn" id="againBtn">Start over</button><a href="#traps" style="font-size:15px">Read the traps</a></div></div>';
+      '<p class="fine">General education only. Not insurance advice. Not a recommendation. Not an offer of coverage. No insurance is sold here. Our Washington license is in progress. A licensed producer checks health, budget, and cover first.</p>' +
+      '<div class="quiznav"><button type="button" class="againbtn" id="againBtn">Start over</button></div></div>';
     rzone.innerHTML = html;
     document.getElementById("againBtn").addEventListener("click", function(){
       if (lock()) return;
