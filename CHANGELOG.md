@@ -1,6 +1,6 @@
 # Clearline Family — site changelog
 
-## Quiz copy polish to Template v2 — 2026-10-22 (12:0x PM PT)
+## Quiz copy polish to Template v2 — 2026-10-22 (~12:30 PM PT)
 Cold-user audit of the quiz itself (the homepage was already v2; the quiz
 screens were not): every result component ran long — why-lines were single
 14–27-word sentences, result "looks" text up to 44 words, trap cards up to
