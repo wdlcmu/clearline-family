@@ -1,0 +1,7 @@
+name = "clearline-mcp"
+main = "src/worker.mjs"
+compatibility_date = "2026-09-01"
+
+# No bindings: the server is stateless by design (nothing stored).
+# The domain-verification token (OPENAI_APPS_CHALLENGE) is set as a
+# worker secret at deploy time; it is never stored in this file.
